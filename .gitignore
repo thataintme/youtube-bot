@@ -1,4 +1,4 @@
 client_secrets.json
-video_defaults.json
+shorts_gen/video_defaults.json
 shorts_gen/clips/
 *.log
