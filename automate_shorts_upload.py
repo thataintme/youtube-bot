@@ -6,22 +6,23 @@ if (len(sys.argv) < 3):
     print(
         "usage: automated.py [YOUTUBE_VIDEO_LINK] [NUMBER_OF_SHORTS_CLIPS_TO_GENERATE]")
     sys.exit()
+video_link = sys.argv[1]
+number_clips = sys.argv[2]
+os.system("python ./utils/video_downloader.py {} {} {}".format(
+    video_link, "./shorts_gen/", "video.mp4"))  # download video
 
-os.system("python ./shorts_gen/video_downloader.py {}".format(
-    sys.argv[1]))  # download video
-
-os.system("python ./shorts_gen/clip_extractor.py {}".format(
-    sys.argv[2]))  # generage shorts clips
+os.system("python ./shorts_gen/clip_extractor.py {} {} {} {} {}".format(
+    number_clips, "./shorts_gen/video.mp4", "./shorts_gen/clips/", 10, 50))
+# generage shorts clips
 
 f = open('./shorts_gen/video_defaults.json')
 defaults = json.load(f)
-print("title ", defaults['title'])
 # upload clips
 for filename in os.listdir('./shorts_gen/clips'):
-    print('python ./shorts_gen/upload_video.py --file=\"./shorts_gen/clips/{}\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'
+    print('python ./utils/upload_video.py --file=\"./shorts_gen/clips/{}\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'
           .format(filename, defaults['title'], defaults['description'], defaults['keywords'], defaults['category'], defaults['privacyStatus']))
     os.system(
-        'python ./shorts_gen/upload_video.py --file=\"./shorts_gen/clips/{}\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'
+        'python ./utils/upload_video.py --file=\"./shorts_gen/clips/{}\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'
         .format(filename, defaults['title'], defaults['description'], defaults['keywords'], defaults['category'], defaults['privacyStatus']))
 
 

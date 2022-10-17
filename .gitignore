@@ -1,4 +1,8 @@
 client_secrets.json
 shorts_gen/video_defaults.json
 shorts_gen/clips/
+video_comp_from_search/videos/
+utils/upload_video.py-oauth2.json
 *.log
+output.mp4
+__pycache__/
