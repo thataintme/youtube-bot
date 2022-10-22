@@ -1,12 +1,13 @@
 from math import floor
 import os
-from random import random, randrange
+from random import randrange
 from secrets import choice
 from sys import argv
 from video_comp_from_search import videos_search
 from moviepy.editor import VideoFileClip, concatenate_videoclips
+import json
 
-if (len(argv) < 4):
+if (len(argv) != 6):
     print(
         "usage: auto_search_compile.py [SEARCH_QUERY] [MAX_VIDEOS_TO_USE] [MAX_LENGTH-OUTPUT] [CLIPS_MIN_LENGTH] [CLIPS_MAX_LENGTH]")
 
@@ -32,8 +33,14 @@ for i in video_links:
 max_number_of_clips = max_length_output // clip_max_len
 
 clips = []
+choice_videos = list(range(j))
+new_choice_videos = choice_videos.copy()
+for i in choice_videos:
+    if (not os.path.exists("./video_comp_from_search/videos/{}.mp4".format(i))):
+        new_choice_videos.remove(i)
+
 for i in range(max_number_of_clips):
-    r = choice(list(range(j-1)))
+    r = choice(new_choice_videos)
     video_path = "./video_comp_from_search/videos/{}.mp4".format(r)
     video = VideoFileClip(video_path)
 
@@ -42,7 +49,16 @@ for i in range(max_number_of_clips):
     clip = video.subclip(start, start+clip_duration)
     clips.append(clip)
 
-    print("clips elements: ", len(clips))
+    clip.write_videofile(
+        "./video_comp_from_search/clips/clipnNumber{}FromFile{}.mp4".format(i, r))
 
-output = concatenate_videoclips(clips)
+output = concatenate_videoclips(clips, method='compose')
 output.write_videofile("./output.mp4")
+
+f = open("./video_comp_from_search/video_defaults.json")
+defaults = json.load(f)
+
+print('python ./utils/upload_video.py --file=\"output.mp4\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'.format(
+    defaults['title'], defaults['description'], defaults['keywords'], defaults['category'], defaults['privacyStatus']))
+os.system('python ./utils/upload_video.py --file=\"output.mp4\" --title=\"{}\" --description=\"{}\" --keywords=\"{}\" --category=\"{}\" --privacyStatus=\"{}\"'.format(
+    defaults['title'], defaults['description'], defaults['keywords'], defaults['category'], defaults['privacyStatus']))
